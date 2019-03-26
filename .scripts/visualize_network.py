@@ -5,8 +5,8 @@ import os
 
 im_height = 250
 
-image_dir = './images'
-style_dir = './style'
+image_dir = '../.images/IntroductieDeepLearning'
+style_dir = '../.style'
 
 font_location = os.path.join(style_dir, 'BebasNeue-Regular.ttf')
 

@@ -1,5 +1,4 @@
 from IPython.display import display
-from scripts import visualize_network
 from pymongo import MongoClient
 from PIL import Image
 from matplotlib.ticker import MaxNLocator
@@ -7,8 +6,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ipywidgets as widgets
 import os
+import imp
+with open('../.scripts/visualize_network.py', 'rb') as fp:
+    visualize_network = imp.load_module('.scripts', fp, '../.scripts/visualize_network.py', ('.py', 'rb', imp.PY_SOURCE))
 
-image_dir = './images'
+image_dir = '../.images/IntroductieDeepLearning'
 
 layout = widgets.Layout(width='30%')
 
