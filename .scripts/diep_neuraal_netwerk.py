@@ -50,6 +50,13 @@ def get_model(base_name='conv_base', regularization=False, optimizer='sgd'):
     return model
 
 
+def toon_loss(base_name='conv_base', regularization=False, optimizer='sgd'):
+    model = get_model(base_name, regularization, optimizer)
+    print('Training loss:\t\t' + str(model['loss']))
+    print('Validation loss:\t' + str(model['val_loss']))
+    print('Test loss:\t\t' + str(model['test_loss']))
+
+
 def toon_accuracy(base_name='conv_base', regularization=False, optimizer='sgd'):
     model = get_model(base_name, regularization, optimizer)
     print('Training accuracy:\t' + str(model['acc']))
@@ -85,6 +92,25 @@ def toon_afbeeldingen(base_name='conv_base', regularization=False, optimizer='sg
     plt.show()
 
 
+def toon_loss_grafiek(base_name='conv_base', regularization=False, optimizer='sgd'):
+    loss = []
+    val_loss = []
+
+    name = (base_name if base_name == 'VGG19_base' else base_name + '_' + str(conv_base.children[1].value) + '-cl') + ('_regularization_' if regularization else '_no-regularization_') + str(ff_layers.children[1].value) + '-ffl_' + str(ff_input.children[1].value) + '-ffn_' + optimizer + '_lr-' + "{:.0E}".format(float(learning_rate.children[1].value))
+    for model in models_collection.find({'name': name, 'epoch': {"$lt": epochs.children[1].value}}).sort('epoch', 1):
+        loss.append(model['loss'])
+        val_loss.append(model['val_loss'])
+
+    ax = plt.figure().gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.plot(range(1, len(loss) + 1), loss, 'b', label='Training loss')
+    plt.plot(range(1, len(val_loss) + 1), val_loss, 'g', label='Validation loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+
 def toon_accuracy_grafiek(base_name='conv_base', regularization=False, optimizer='sgd'):
     acc = []
     val_acc = []
@@ -110,6 +136,7 @@ def vind_stomata(base_name='conv_base', regularization=False, optimizer='sgd'):
     fig, ax = plt.subplots(figsize=(14, 12), nrows=1, ncols=3)
     im_objects = []
     points = []
+    annotations = []
     for i, im_object in enumerate(model['full_images']):
         im_objects.append(im_object)
 
@@ -119,6 +146,8 @@ def vind_stomata(base_name='conv_base', regularization=False, optimizer='sgd'):
         ax[i].imshow(im_r)
         points_im, = ax[i].plot([], [], '+c', alpha=0.6, markeredgewidth=3, markersize=12)
         points.append(points_im)
+        annotation = ax[i].annotate('', (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', fontsize=14, va='top')
+        annotations.append(annotation)
 
     plt.close()
 
@@ -128,6 +157,8 @@ def vind_stomata(base_name='conv_base', regularization=False, optimizer='sgd'):
             y_points = [x[1] for x in im_object['points'][str(thr)]]
             points[i].set_xdata(x_points)
             points[i].set_ydata(y_points)
+            text = 'precision: ' + str(im_object['precision'][str(thr)]) + '\nrecall: ' + str(im_object['recall'][str(thr)])
+            annotations[i].set_text(text)
         display(fig)
 
     widgets.interact(change_threshold, thr=(5, 95, 5))
