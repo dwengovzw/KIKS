@@ -198,10 +198,10 @@ def laad_referentie_model():
         'base_name': 'VGG19_base',
         'conv_layers': 2,
         'regularization': True,
-        'ff_layers': 2,
+        'ff_layers': 1,
         'ff_input': 1024,
-        'optimizer': 'sgd',
-        'learning_rate': 0.001,
+        'optimizer': 'adam',
+        'learning_rate': 0.0001,
         'epoch': 20
     }
     get_model()
