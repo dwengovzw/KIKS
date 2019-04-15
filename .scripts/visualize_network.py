@@ -47,61 +47,93 @@ def calculate_point(full_im_width, im_size, width_perc, height_perc, extra_width
     return point
 
 
+def get_layers_list(base, n_conv_layers, dropout, n_ff_layers, n_ff_input):
+    layers = []
+    if base == 'VGG19':
+        layers.append({'name': 'conv', 'filters': 64, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 64, 'maxpool': True})
+        layers.append({'name': 'conv', 'filters': 128, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 128, 'maxpool': True})
+        layers.append({'name': 'conv', 'filters': 256, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 256, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 256, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 256, 'maxpool': True})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': True})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': False})
+        layers.append({'name': 'conv', 'filters': 512, 'maxpool': True})
+    elif base == 'conv_base':
+        filters = 32
+        for i in range(n_conv_layers):
+            layers.append({'name': 'conv', 'filters': filters, 'maxpool': True})
+            filters *= 2
+
+    neurons = n_ff_input
+    for i in range(n_ff_layers):
+        layers.append({'name': 'feedforward', 'neurons': neurons, 'dropout': dropout})
+        neurons = int(neurons / 2)
+
+    return layers
+
+
 def get_network_image(base='conv_base', n_conv_layers=1, dropout=False, n_ff_layers=1, n_ff_input=16):
+    layers = get_layers_list(base, n_conv_layers, dropout, n_ff_layers, n_ff_input)
+
     font = ImageFont.truetype(font_location, size=int(im_height * (12 / 200)))
 
     conv_layer_im_local = preprocess_image(conv_layer_im)
     stoma_im_local = preprocess_image(stoma_im)
+    ff_layer_im_local = preprocess_image(ff_layer_im)
+    tussen_layer_local = preprocess_image(tussen_layer_im)
 
-    full_im_r = np.hstack([np.asarray(add_padding(stoma_im_local, im_height)), np.asarray(add_padding(tussen_layer_im, im_height))])
+    full_im_r = np.hstack([np.asarray(add_padding(stoma_im_local, im_height)), np.asarray(add_padding(tussen_layer_local, im_height))])
     full_im = Image.fromarray(full_im_r)
 
     square_width = int(im_height * (10 / 200))
     square_left_top = [stoma_im_local.size[0] * 0.2, stoma_im_local.size[1] * 0.2 + math.ceil((im_height - stoma_im_local.size[1]) / 2)]
     square_right_bottom = [square_left_top[0] + (2 * square_width), square_left_top[1] + (2 * square_width)]
 
-    dimension = 32
-    for i in range(n_conv_layers):
+    for layer in layers:
         full_im_width = full_im.size[0]
+        if layer['name'] == 'conv':
+            dest_point = calculate_point(full_im_width, conv_layer_im_local.size, 0.6, 0.7)
 
-        dest_point = calculate_point(full_im_width, conv_layer_im_local.size, 0.6, 0.7)
+            demension_location = calculate_point(full_im_width, conv_layer_im_local.size, 0.60, 1, extra_height=5)
 
-        demension_location = calculate_point(full_im_width, conv_layer_im_local.size, 0.60, 1, extra_height=5)
-        pooling_location = calculate_point(full_im_width + conv_layer_im_local.size[0], tussen_layer_im.size, 0, 0, extra_height=int(im_height * -0.15))
+            full_im_r = np.hstack([np.asarray(full_im), np.asarray(add_padding(conv_layer_im_local, im_height)), np.asarray(add_padding(tussen_layer_local, im_height))])
+            full_im = Image.fromarray(full_im_r)
 
-        full_im_r = np.hstack([np.asarray(full_im), np.asarray(add_padding(conv_layer_im_local, im_height)), np.asarray(add_padding(tussen_layer_im, im_height))])
-        full_im = Image.fromarray(full_im_r)
+            draw = ImageDraw.Draw(full_im)
+            draw.rectangle([tuple(square_left_top), tuple(square_right_bottom)], outline=0)
+            draw.line([square_left_top[0] + (square_right_bottom[0] - square_left_top[0]), square_left_top[1], dest_point[0],dest_point[1]], fill=0, width=2)
+            draw.line([square_right_bottom[0], square_right_bottom[1], dest_point[0], dest_point[1]], fill=0, width=2)
+            draw.text(demension_location, str(layer['filters']), 0, font=font)
 
-        draw = ImageDraw.Draw(full_im)
-        draw.rectangle([tuple(square_left_top), tuple(square_right_bottom)], outline=0)
-        draw.line([square_left_top[0] + (square_right_bottom[0] - square_left_top[0]), square_left_top[1], dest_point[0], dest_point[1]], fill=0, width=2)
-        draw.line([square_right_bottom[0], square_right_bottom[1], dest_point[0], dest_point[1]], fill=0, width=2)
-        draw.text(demension_location, str(dimension), 0, font=font)
-        draw.text(pooling_location, 'max\npooling', 0, font=ImageFont.truetype(font_location, size=15))
+            square_left_top = calculate_point(full_im_width, conv_layer_im_local.size, 0.7, 0.8)
+            square_right_bottom = [square_left_top[0] + square_width, square_left_top[1] + square_width]
 
-        square_left_top = calculate_point(full_im_width, conv_layer_im_local.size, 0.7, 0.8)
-        square_right_bottom = [square_left_top[0] + square_width, square_left_top[1] + square_width]
+            if layer['maxpool']:
+                pooling_location = calculate_point(full_im_width + conv_layer_im_local.size[0], tussen_layer_local.size, 0, 0.25)
+                draw.text(pooling_location, 'max\npooling', 0, font=font)
+                conv_layer_im_local = resize_keep_ratio(conv_layer_im_local, int(conv_layer_im_local.size[1] * 0.7))
 
-        dimension *= 2
-        conv_layer_im_local = resize_keep_ratio(conv_layer_im_local, int(conv_layer_im_local.size[1] * 0.7))
+        elif layer['name'] == 'feedforward':
+            demension_location = calculate_point(full_im_width, ff_layer_im_local.size, 0, 1, extra_height=5)
 
-    ff_layer_im_local = preprocess_image(ff_layer_im)
+            full_im_r = np.hstack([np.asarray(full_im), np.asarray(add_padding(ff_layer_im_local, im_height)), np.asarray(add_padding(tussen_layer_local, im_height))])
+            full_im = Image.fromarray(full_im_r)
 
-    dimension = n_ff_input
-    for i in range(n_ff_layers):
-        demension_location = calculate_point(full_im.size[0], ff_layer_im_local.size, 0, 1, extra_height=5)
-        dropout_location = calculate_point(full_im.size[0] + ff_layer_im_local.size[0], tussen_layer_im.size, 0, 0, extra_width=2, extra_height=int(im_height * -0.08))
+            draw = ImageDraw.Draw(full_im)
+            draw.text(demension_location, str(layer['neurons']), 0, font=font)
+            if layer['dropout']:
+                dropout_location = calculate_point(full_im_width + ff_layer_im_local.size[0], tussen_layer_local.size, 0, 0.35, extra_width=2)
+                draw.text(dropout_location, 'dropout', 0, font=font)
 
-        full_im_r = np.hstack([np.asarray(full_im), np.asarray(add_padding(ff_layer_im_local, im_height)), np.asarray(add_padding(tussen_layer_im, im_height))])
-        full_im = Image.fromarray(full_im_r)
-
-        draw = ImageDraw.Draw(full_im)
-        draw.text(demension_location, str(dimension), 0, font=font)
-        if dropout:
-            draw.text(dropout_location, 'dropout', 0, font=ImageFont.truetype(font_location, size=15))
-
-        dimension = int(dimension / 2)
-        ff_layer_im_local = ff_layer_im_local.resize((ff_layer_im_local.size[0], int(ff_layer_im_local.size[1] / 2)), Image.ANTIALIAS)
+            ff_layer_im_local = ff_layer_im_local.resize((ff_layer_im_local.size[0], int(ff_layer_im_local.size[1] / 2)), Image.ANTIALIAS)
 
     full_im_r = np.hstack([np.asarray(full_im), np.asarray(add_padding(last_layer_im, im_height))])
     full_im = Image.fromarray(full_im_r)

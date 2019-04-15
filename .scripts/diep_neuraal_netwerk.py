@@ -207,7 +207,7 @@ def laad_referentie_model():
     global model_attr
     model_attr = {
         'base_name': 'VGG19_base',
-        'conv_layers': 2,
+        'conv_layers': 0,
         'regularization': True,
         'ff_layers': 1,
         'ff_input': 1024,
@@ -216,6 +216,7 @@ def laad_referentie_model():
         'epoch': 20
     }
     get_model()
+    print('Gelukt!')
 
 
 def misleid_netwerk():
