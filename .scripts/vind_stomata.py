@@ -64,7 +64,7 @@ def toon_eigen_afbeelding():
 
     max_x = max(width - 800, 0)
     max_y = max(height - 800, 0)
-    widgets.interact(choose_regio, x=widgets.IntSlider(min=0, max=max_x), y=widgets.IntSlider(min=0, max=max_y))
+    widgets.interact(choose_regio, x=widgets.IntSlider(min=0, max=max_x, continuous_update=False), y=widgets.IntSlider(min=0, max=max_y, continuous_update=False))
 
 
 def vind_stomata_subproces(im_r, q):
