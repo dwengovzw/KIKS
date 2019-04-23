@@ -91,11 +91,13 @@ def toon_voorspellingen():
     big_axes[0].set_axis_off()
     big_axes[1].set_axis_off()
 
+    axes = []
     images = model['stoma_patches'] + model['no_stoma_patches']
     for i, image in enumerate(images):
         im = Image.open(os.path.join(image_dir, image['name']))
         ax = fig.add_subplot(2, 6, i + 1)
         ax.imshow(im)
+        axes.append(ax)
 
         xlabel = "Pred: {:f}".format(float(image['prediction']))
         ax.set_xlabel(xlabel)
@@ -103,7 +105,20 @@ def toon_voorspellingen():
         ax.set_xticks([])
         ax.set_yticks([])
 
-    plt.show()
+    plt.close()
+
+    def change_threshold(thr=50):
+        for i, image in enumerate(images):
+            if (float(image['prediction']) < (thr / 100) and image in model['stoma_patches']) or (float(image['prediction']) > (thr / 100) and image in model['no_stoma_patches']):
+                for spine in axes[i].spines.values():
+                    spine.set_edgecolor('r')
+            else:
+                for spine in axes[i].spines.values():
+                    spine.set_edgecolor('g')
+
+        display(fig)
+
+    widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
 
 
 def toon_slechte_voorspellingen():
@@ -115,10 +130,12 @@ def toon_slechte_voorspellingen():
     big_axes[0].set_axis_off()
     big_axes[1].set_axis_off()
 
+    axes = []
     images = model['false_negatives'] + model['false_positives']
     for i, image in enumerate(images):
         im = Image.open(os.path.join(image_dir, image['name']))
         ax = fig.add_subplot(2, 6, i + 1)
+        axes.append(ax)
         ax.imshow(im)
 
         xlabel = "Pred: {:f}".format(float(image['prediction']))
@@ -127,7 +144,20 @@ def toon_slechte_voorspellingen():
         ax.set_xticks([])
         ax.set_yticks([])
 
-    plt.show()
+    plt.close()
+
+    def change_threshold(thr=50):
+        for i, image in enumerate(images):
+            if (float(image['prediction']) < (thr / 100) and image in model['false_negatives']) or (float(image['prediction']) > (thr / 100) and image in model['false_positives']):
+                for spine in axes[i].spines.values():
+                    spine.set_edgecolor('r')
+            else:
+                for spine in axes[i].spines.values():
+                    spine.set_edgecolor('g')
+
+        display(fig)
+
+    widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
 
 
 def toon_test_resultaten():
