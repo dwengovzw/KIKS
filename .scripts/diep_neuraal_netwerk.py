@@ -236,13 +236,13 @@ def vind_stomata():
 def laad_referentie_model():
     global model_attr
     model_attr = {
-        'base_name': 'VGG19_base',
-        'conv_layers': 0,
+        'base_name': 'conv_base',
+        'conv_layers': 3,
         'regularization': True,
-        'ff_layers': 1,
+        'ff_layers': 2,
         'ff_input': 1024,
-        'optimizer': 'adam',
-        'learning_rate': 0.0001,
+        'optimizer': 'sgd',
+        'learning_rate': 0.1,
         'epoch': 20
     }
     get_model()
