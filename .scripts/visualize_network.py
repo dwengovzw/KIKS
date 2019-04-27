@@ -94,8 +94,8 @@ def get_network_image(base='conv_base', n_conv_layers=1, dropout=False, n_ff_lay
     full_im = Image.fromarray(full_im_r)
 
     square_width = int(im_height * (10 / 200))
-    square_left_top = [stoma_im_local.size[0] * 0.2, stoma_im_local.size[1] * 0.2 + math.ceil((im_height - stoma_im_local.size[1]) / 2)]
-    square_right_bottom = [square_left_top[0] + (2 * square_width), square_left_top[1] + (2 * square_width)]
+    square_left_top = [stoma_im_local.size[0] * 0.2, stoma_im_local.size[1] * 0.35 + math.ceil((im_height - stoma_im_local.size[1]) / 2)]
+    square_right_bottom = [square_left_top[0] + square_width, square_left_top[1] + square_width]
 
     for layer in layers:
         full_im_width = full_im.size[0]

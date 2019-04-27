@@ -205,8 +205,6 @@ def vind_stomata():
     points = []
     annotations = []
     for i, im_object in enumerate(model['full_images']):
-        if im_object['name'] == 'kat':
-            continue
         im_objects.append(im_object)
 
         im = Image.open(os.path.join(image_dir, im_object['name']))
@@ -250,24 +248,27 @@ def laad_referentie_model():
 
 
 def misleid_netwerk():
-    image_path = os.path.join(image_dir, 'kat.jpg')
-    image = Image.open(image_path)
+    fig, ax = plt.subplots(nrows=1, ncols=len(model['adverserial_images']), squeeze=False)
+    im_objects = []
+    points = []
+    for i, im_object in enumerate(model['adverserial_images']):
+        im_objects.append(im_object)
 
-    for full_image in model['full_images']:
-        if full_image['name'] != 'kat':
-            continue
-        stomata_punten = full_image['points']
+        im = Image.open(os.path.join(image_dir, im_object['name']))
+        im_r = np.array(im)
 
-    fig, ax = plt.subplots()
-    ax.imshow(image)
-    points_im, = ax.plot([], [], '+c', alpha=0.6, markeredgewidth=3, markersize=12)
+        ax[0][i].imshow(im_r)
+        points_im, = ax[0][i].plot([], [], '+c', alpha=0.6, markeredgewidth=3, markersize=12)
+        points.append(points_im)
+
     plt.close()
 
     def change_threshold(thr=50):
-        x_points = [x[0] for x in stomata_punten[str(thr)]]
-        y_points = [x[1] for x in stomata_punten[str(thr)]]
-        points_im.set_xdata(x_points)
-        points_im.set_ydata(y_points)
+        for i, im_object in enumerate(im_objects):
+            x_points = [x[0] for x in im_object['points'][str(thr)]]
+            y_points = [x[1] for x in im_object['points'][str(thr)]]
+            points[i].set_xdata(x_points)
+            points[i].set_ydata(y_points)
         display(fig)
 
     widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
