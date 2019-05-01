@@ -26,7 +26,7 @@ ff_input_widget = widgets.HBox([widgets.Label('Aantal neuronen in eerste feedfor
 learning_rate_widget = widgets.HBox([widgets.Label('learning rate:', layout=layout), widgets.SelectionSlider(value=0.01, options=[0.1, 0.01, 0.001, 0.0001])])
 epochs_widget = widgets.HBox([widgets.Label('Aantal epochs:', layout=layout), widgets.IntSlider(value=20, min=1, max=20)])
 
-client = MongoClient()
+client = MongoClient('mongodb://database:27017/')
 db = client.models
 models_collection = db.models
 
