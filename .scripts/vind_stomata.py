@@ -1,13 +1,16 @@
 from PIL import Image
 from sklearn.cluster import MeanShift, estimate_bandwidth
 from keras.models import load_model
+from keras import backend as K
 from ipyupload import FileUpload
 from multiprocessing import Process, Queue
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import ipywidgets as widgets
+import tensorflow as tf
 import numpy as np
 import warnings
+import GPUtil
 import io
 import os
 
@@ -68,6 +71,12 @@ def toon_eigen_afbeelding():
 
 
 def vind_stomata_subproces(im_r, q):
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    config.gpu_options.per_process_gpu_memory_fraction = 0.1
+    sess = tf.Session(config=config)
+    K.set_session(sess)
+
     model_file = load_model(os.path.join(model_dir, reference_model))
 
     shift = 10
@@ -113,6 +122,21 @@ def vind_stomata_eigen_afbeelding():
     if image_crop is None:
         return
 
+    GPUs = GPUtil.getGPUs()
+    available_gpu_ids = []
+    for gpu in GPUs:
+        if gpu.memoryFree > 1000:
+            available_gpu_ids.append(gpu.id)
+
+    if 'CUDA_VISIBLE_DEVICES' in os.environ:
+        for id in available_gpu_ids:
+            if str(id) not in os.environ["CUDA_VISIBLE_DEVICES"].split(','):
+                available_gpu_ids.remove(id)
+
+    if not available_gpu_ids:
+        print('Niet genoeg GPU memory beschikbaar, probeer straks opnieuw.')
+        return
+
     # We voeren dit uit in een appart proces omdat de gpu memory dan wordt vrijgegeven
     q = Queue()
     p = Process(target=vind_stomata_subproces, args=(image_crop, q))
@@ -125,11 +149,11 @@ def vind_stomata_eigen_afbeelding():
     points_im, = ax.plot([], [], '+c', alpha=0.6, markeredgewidth=3, markersize=12)
     plt.close()
 
-    def change_threshold(thr=50):
-        x_points = [x[0] for x in stomata_punten[str(thr)]]
-        y_points = [x[1] for x in stomata_punten[str(thr)]]
+    def change_threshold(thr=0.5):
+        x_points = [x[0] for x in stomata_punten[str(int(thr * 100))]]
+        y_points = [x[1] for x in stomata_punten[str(int(thr * 100))]]
         points_im.set_xdata(x_points)
         points_im.set_ydata(y_points)
         display(fig)
 
-    widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
+    widgets.interact(change_threshold, thr=widgets.FloatSlider(value=0.5, min=0.05, max=0.99, step=0.05, continuous_update=False))
