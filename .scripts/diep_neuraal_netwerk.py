@@ -38,7 +38,7 @@ model_attr = {
     'ff_input': 16,
     'optimizer': 'sgd',
     'learning_rate': 0.01,
-    'epoch': 20
+    'epoch': 50
 }
 
 model = None
@@ -78,7 +78,7 @@ def kies_training_parameters():
 
 
 def toon_netwerk():
-    im = visualize_network.get_network_image(n_conv_layers=model_attr['conv_layers'], dropout=model_attr['regularization'], n_ff_layers=model_attr['ff_layers'], n_ff_input=model_attr['ff_input'])
+    im = visualize_network.get_network_image(base=model_attr['base_name'], n_conv_layers=model_attr['conv_layers'], dropout=model_attr['regularization'], n_ff_layers=model_attr['ff_layers'], n_ff_input=model_attr['ff_input'])
     display(im)
 
 
@@ -97,6 +97,8 @@ def toon_voorspellingen():
         im = Image.open(os.path.join(image_dir, image['name']))
         ax = fig.add_subplot(2, 6, i + 1)
         ax.imshow(im)
+        for spine in ax.spines.values():
+            spine.set_linewidth(2)
         axes.append(ax)
 
         xlabel = "Pred: {:f}".format(float(image['prediction']))
@@ -107,9 +109,9 @@ def toon_voorspellingen():
 
     plt.close()
 
-    def change_threshold(thr=50):
+    def change_threshold(thr=0.5):
         for i, image in enumerate(images):
-            if (float(image['prediction']) < (thr / 100) and image in model['stoma_patches']) or (float(image['prediction']) > (thr / 100) and image in model['no_stoma_patches']):
+            if (float(image['prediction']) < thr and image in model['stoma_patches']) or (float(image['prediction']) > thr and image in model['no_stoma_patches']):
                 for spine in axes[i].spines.values():
                     spine.set_edgecolor('r')
             else:
@@ -118,7 +120,7 @@ def toon_voorspellingen():
 
         display(fig)
 
-    widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
+    widgets.interact(change_threshold, thr=widgets.FloatSlider(value=0.5, min=0.05, max=0.99, step=0.05, continuous_update=False))
 
 
 def toon_slechte_voorspellingen():
@@ -135,8 +137,10 @@ def toon_slechte_voorspellingen():
     for i, image in enumerate(images):
         im = Image.open(os.path.join(image_dir, image['name']))
         ax = fig.add_subplot(2, 6, i + 1)
-        axes.append(ax)
         ax.imshow(im)
+        for spine in ax.spines.values():
+            spine.set_linewidth(2)
+        axes.append(ax)
 
         xlabel = "Pred: {:f}".format(float(image['prediction']))
         ax.set_xlabel(xlabel)
@@ -146,9 +150,9 @@ def toon_slechte_voorspellingen():
 
     plt.close()
 
-    def change_threshold(thr=50):
+    def change_threshold(thr=0.5):
         for i, image in enumerate(images):
-            if (float(image['prediction']) < (thr / 100) and image in model['false_negatives']) or (float(image['prediction']) > (thr / 100) and image in model['false_positives']):
+            if (float(image['prediction']) < thr and image in model['false_negatives']) or (float(image['prediction']) > thr and image in model['false_positives']):
                 for spine in axes[i].spines.values():
                     spine.set_edgecolor('r')
             else:
@@ -157,7 +161,7 @@ def toon_slechte_voorspellingen():
 
         display(fig)
 
-    widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
+    widgets.interact(change_threshold, thr=widgets.FloatSlider(value=0.5, min=0.05, max=0.99, step=0.05, continuous_update=False))
 
 
 def toon_test_resultaten():
@@ -193,7 +197,7 @@ def toon_grafiek():
     ax[1].plot(range(1, len(acc) + 1), acc, 'b', label='Training accuracy')
     ax[1].plot(range(1, len(val_acc) + 1), val_acc, 'g', label='Validation accuracy')
     ax[1].set_xlabel('Epochs')
-    ax[1].set_ylabel('Loss')
+    ax[1].set_ylabel('Accuracy')
     ax[1].legend()
 
     plt.show()
@@ -218,17 +222,17 @@ def vind_stomata():
 
     plt.close()
 
-    def change_threshold(thr=50):
+    def change_threshold(thr=0.5):
         for i, im_object in enumerate(im_objects):
-            x_points = [x[0] for x in im_object['points'][str(thr)]]
-            y_points = [x[1] for x in im_object['points'][str(thr)]]
+            x_points = [x[0] for x in im_object['points'][str(int(thr * 100))]]
+            y_points = [x[1] for x in im_object['points'][str(int(thr * 100))]]
             points[i].set_xdata(x_points)
             points[i].set_ydata(y_points)
-            text = 'precision: ' + str(im_object['precision'][str(thr)]) + '\nrecall: ' + str(im_object['recall'][str(thr)])
+            text = 'precision: ' + str(im_object['precision'][str(int(thr * 100))]) + '\nrecall: ' + str(im_object['recall'][str(int(thr * 100))])
             annotations[i].set_text(text)
         display(fig)
 
-    widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
+    widgets.interact(change_threshold, thr=widgets.FloatSlider(value=0.5, min=0.05, max=0.99, step=0.05, continuous_update=False))
 
 
 def laad_referentie_model():
@@ -237,11 +241,11 @@ def laad_referentie_model():
         'base_name': 'conv_base',
         'conv_layers': 3,
         'regularization': True,
-        'ff_layers': 2,
-        'ff_input': 1024,
+        'ff_layers': 1,
+        'ff_input': 64,
         'optimizer': 'sgd',
-        'learning_rate': 0.1,
-        'epoch': 20
+        'learning_rate': 0.01,
+        'epoch': 50
     }
     get_model()
     print('Gelukt!')
@@ -263,15 +267,15 @@ def misleid_netwerk():
 
     plt.close()
 
-    def change_threshold(thr=50):
+    def change_threshold(thr=0.5):
         for i, im_object in enumerate(im_objects):
-            x_points = [x[0] for x in im_object['points'][str(thr)]]
-            y_points = [x[1] for x in im_object['points'][str(thr)]]
+            x_points = [x[0] for x in im_object['points'][str(int(thr * 100))]]
+            y_points = [x[1] for x in im_object['points'][str(int(thr * 100))]]
             points[i].set_xdata(x_points)
             points[i].set_ydata(y_points)
         display(fig)
 
-    widgets.interact(change_threshold, thr=widgets.IntSlider(value=50, min=5, max=95, step=5, continuous_update=False))
+    widgets.interact(change_threshold, thr=widgets.FloatSlider(value=0.5, min=0.05, max=0.99, step=0.05, continuous_update=False))
 
 
 print('Import succesvol, je kan beginnen!')
