@@ -49,7 +49,7 @@ def calculate_point(full_im_width, im_size, width_perc, height_perc, extra_width
 
 def get_layers_list(base, n_conv_layers, dropout, n_ff_layers, n_ff_input):
     layers = []
-    if base == 'VGG19':
+    if base == 'VGG19_base':
         layers.append({'name': 'conv', 'filters': 64, 'maxpool': False})
         layers.append({'name': 'conv', 'filters': 64, 'maxpool': True})
         layers.append({'name': 'conv', 'filters': 128, 'maxpool': False})

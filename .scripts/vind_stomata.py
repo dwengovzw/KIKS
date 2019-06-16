@@ -155,5 +155,6 @@ def vind_stomata_eigen_afbeelding():
         points_im.set_xdata(x_points)
         points_im.set_ydata(y_points)
         display(fig)
+        print('Aantal stomata: ' + str(len(stomata_punten[str(int(thr * 100))])))
 
     widgets.interact(change_threshold, thr=widgets.FloatSlider(value=0.5, min=0.05, max=0.99, step=0.05, continuous_update=False))
