@@ -17,15 +17,17 @@ Introductie Python
 
 Introductie Machine Learning
     Standaardiseren
-    Iris
-    Stomata zon-schaduw
+    Regressie met data over de Iris virginica
+    Classificatie met de Iris dataset
+    Hoogte bomen en afmetingen stomata in het Amazonewoud
+    Stomata op bezonde en beschaduwde bladeren
     
-
 Introductie Deep Learning
-    Eigen stomatadetectie
+    Detectie van stomata in een afbeelding
     Convolutie
+    Convolutie: de bewerking
     Gradient descent
-    Basis diep neuraal netwerk
+    Basis diep neuraal netwerk voor beeldherkenning
     Overfitting
     Stomatadetectie
     ReLU
