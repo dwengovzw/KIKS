@@ -17,8 +17,8 @@ Introductie Python
 
 Introductie Machine Learning
     Standaardiseren
-    Regressie met data over de Iris virginica
     Classificatie met de Iris dataset
+    Regressie met data over de Iris virginica
     Hoogte bomen en afmetingen stomata in het Amazonewoud
     Stomata op bezonde en beschaduwde bladeren
     
