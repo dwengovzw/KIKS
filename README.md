@@ -17,6 +17,8 @@ Introductie Python
 
 Introductie Machine Learning
     Standaardiseren
+    Smeltende gletsjers: de Morteratsch-gletsjer
+    Smeltende gletsjers: de Silvretta-gletsjer
     Classificatie met de Iris dataset
     Regressie met data over de Iris virginica
     Hoogte bomen en afmetingen stomata in het Amazonewoud
