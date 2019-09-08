@@ -7,17 +7,22 @@ Introductie Python
     Aan de slag
     Rekenen
     Datastructuur
-    Datastructuur NumPy
     Structuren
+    Datastructuur NumPy
     Functies
     Klassen
     Grafieken
+    CO2
+    Keelingcurve
+    Verband tussen CO2 en temperatuur
+    Smeltende gletsjer: Morteratsch
+    Smeltende gletsjer: Silvretta
     Matrices en afbeeldingen in grijswaarden
     Tensoren en RGB
 
 Introductie Machine Learning
     Standaardiseren
-    Smeltende gletsjers: de Morteratsch-gletsjer
+    Regressie met de Morteratsch-gletsjer 
     Smeltende gletsjers: de Silvretta-gletsjer
     Classificatie met de Iris dataset
     Regressie met data over de Iris virginica
