@@ -17,14 +17,15 @@ Introductie Python
     Verband tussen CO2 en temperatuur
     Smeltende gletsjer: Morteratsch
     Smeltende gletsjer: Silvretta
+    Tensoren
     Matrices en afbeeldingen in grijswaarden
     Tensoren en RGB
 
 Introductie Machine Learning
     Standaardiseren
-    Regressie met de Morteratsch-gletsjer 
-    Smeltende gletsjers: de Silvretta-gletsjer
-    Classificatie met de Iris dataset
+    Regressie met de Morteratschgletsjer 
+    Regressie met de Silvrettagletsjer
+    Classificatie met de Iris-dataset
     Regressie met data over de Iris virginica
     Hoogte bomen en afmetingen stomata in het Amazonewoud
     Stomata op bezonde en beschaduwde bladeren
