@@ -20,23 +20,35 @@ Introductie Python
     Tensoren
     Matrices en afbeeldingen in grijswaarden
     Tensoren en RGB
+	Van jpg naar dat of npy
+	Verborgen boodschap
 
 Introductie Machine Learning
     Standaardiseren
     Regressie met de Morteratschgletsjer 
     Regressie met de Silvrettagletsjer
-    Classificatie met de Iris-dataset
+    Classificatie met de Iris dataset (Perceptron)
     Regressie met data over de Iris virginica
     Hoogte bomen en afmetingen stomata in het Amazonewoud
     Stomata op bezonde en beschaduwde bladeren
+	Zeeniveau
     
 Introductie Deep Learning
     Detectie van stomata in een afbeelding
+	Stomatadetectie
     Convolutie
     Convolutie: de bewerking
+	ReLU
     Gradient descent
-    Basis diep neuraal netwerk voor beeldherkenning
+    Fundamenten van een diep neuraal netwerk voor beeldherkenning
     Overfitting
-    Stomatadetectie
-    ReLU
+	MNIST
+	Binaire classificatie met neuraal netwerk met een verborgen laag
+    Binaire classificatie met neuraal netwerk met twee verborgen lagen
+	Multiklassenclassificatie voor twee klassen met neuraal netwerk met twee verborgen lagen
+	Classificatie van de MNIST dataset met een convolutioneel neuraal netwerk 
+	Classificatie van de Iris datasset met een hidden layer
+	Classificatie van de Iris dataset met alle kenmerken
+	Binaire classificatie met neuraal netwerk met een hidden layer en met verbeterde SGD
+    
     
