@@ -47,8 +47,8 @@ Introductie Deep Learning
     Binaire classificatie met neuraal netwerk met twee verborgen lagen
 	Multiklassenclassificatie voor twee klassen met neuraal netwerk met twee verborgen lagen
 	Classificatie van de MNIST dataset met een convolutioneel neuraal netwerk 
-	Classificatie van de Iris datasset met een hidden layer
+	Classificatie van de Iris datasset met een verborgen laag
 	Classificatie van de Iris dataset met alle kenmerken
-	Binaire classificatie met neuraal netwerk met een hidden layer en met verbeterde SGD
+	Binaire classificatie met neuraal netwerk met een verborgen laag en met verbeterde SGD
     
     
